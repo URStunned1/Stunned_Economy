@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import com.stunned.economy.terminal.TerminalManager;
 
 public abstract class IndustrialScreen<T extends AbstractContainerMenu>
         extends AbstractContainerScreen<T> {
@@ -15,6 +16,8 @@ public abstract class IndustrialScreen<T extends AbstractContainerMenu>
         this.imageWidth = 240;
         this.imageHeight = 170;
     }
+
+    protected final TerminalManager terminalManager = new TerminalManager();
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
@@ -54,6 +57,14 @@ public abstract class IndustrialScreen<T extends AbstractContainerMenu>
                 leftPos + 10,
                 topPos + imageHeight - 13,
                 0x55FF55
+        );
+        terminalManager.getActiveApplication().render(
+                guiGraphics,
+                leftPos,
+                topPos,
+                mouseX,
+                mouseY,
+                partialTick
         );
     }
 
