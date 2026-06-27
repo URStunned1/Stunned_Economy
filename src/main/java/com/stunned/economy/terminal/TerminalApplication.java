@@ -18,4 +18,6 @@ public interface TerminalApplication {
             float partialTick
     );
 
-    default void on
+    default void onClose() {
+    }
+}

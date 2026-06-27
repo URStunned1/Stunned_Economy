@@ -4,6 +4,7 @@ import com.stunned.economy.client.gui.IndustrialScreen;
 import com.stunned.economy.terminal.TerminalApplication;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import com.stunned.economy.client.gui.IndustrialScreen;
 
 public class BankApplication implements TerminalApplication {
 
@@ -13,8 +14,7 @@ public class BankApplication implements TerminalApplication {
     }
 
     @Override
-    public void init() {
-
+    public void init(IndustrialScreen<?> screen) {
     }
 
     @Override
@@ -37,10 +37,6 @@ public class BankApplication implements TerminalApplication {
 
     @Override
     public void onClose() {
-
-    }
-    @Override
-    public void init(IndustrialScreen<?> screen) {
 
     }
 }
