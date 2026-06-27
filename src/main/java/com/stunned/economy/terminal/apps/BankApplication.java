@@ -4,7 +4,6 @@ import com.stunned.economy.client.gui.IndustrialScreen;
 import com.stunned.economy.terminal.TerminalApplication;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import com.stunned.economy.client.gui.IndustrialScreen;
 
 public class BankApplication implements TerminalApplication {
 
