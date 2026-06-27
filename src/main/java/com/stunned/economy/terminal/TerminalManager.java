@@ -4,11 +4,7 @@ import com.stunned.economy.terminal.apps.BankApplication;
 
 public class TerminalManager {
 
-    private TerminalApplication activeApplication;
-
-    public TerminalManager() {
-        this.activeApplication = new BankApplication();
-    }
+    private TerminalApplication activeApplication = new BankApplication();
 
     public TerminalApplication getActiveApplication() {
         return activeApplication;
@@ -20,6 +16,5 @@ public class TerminalManager {
         }
 
         this.activeApplication = application;
-        this.activeApplication.init();
     }
 }

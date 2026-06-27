@@ -1,5 +1,6 @@
 package com.stunned.economy.terminal.apps;
 
+import com.stunned.economy.client.gui.IndustrialScreen;
 import com.stunned.economy.terminal.TerminalApplication;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,6 +37,10 @@ public class BankApplication implements TerminalApplication {
 
     @Override
     public void onClose() {
+
+    }
+    @Override
+    public void init(IndustrialScreen<?> screen) {
 
     }
 }

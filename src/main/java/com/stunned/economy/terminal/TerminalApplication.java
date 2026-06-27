@@ -1,15 +1,16 @@
 package com.stunned.economy.terminal;
 
+import com.stunned.economy.client.gui.IndustrialScreen;
 import net.minecraft.client.gui.GuiGraphics;
 
 public interface TerminalApplication {
 
     String getAppName();
 
-    void init();
+    void init(IndustrialScreen<?> screen);
 
     void render(
-            GuiGraphics guiGraphics,
+            GuiGraphics graphics,
             int left,
             int top,
             int mouseX,
@@ -17,6 +18,4 @@ public interface TerminalApplication {
             float partialTick
     );
 
-    default void onClose() {
-    }
-}
+    default void on

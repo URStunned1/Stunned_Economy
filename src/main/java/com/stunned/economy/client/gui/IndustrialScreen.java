@@ -15,6 +15,15 @@ public abstract class IndustrialScreen<T extends AbstractContainerMenu>
 
         this.imageWidth = 240;
         this.imageHeight = 170;
+
+        this.inventoryLabelX = -1000;
+        this.inventoryLabelY = -1000;
+    }
+    public <W extends net.minecraft.client.gui.components.Renderable &
+            net.minecraft.client.gui.components.events.GuiEventListener &
+            net.minecraft.client.gui.narration.NarratableEntry>
+    W addTerminalWidget(W widget) {
+        return addRenderableWidget(widget);
     }
 
     protected final TerminalManager terminalManager = new TerminalManager();
@@ -72,4 +81,10 @@ public abstract class IndustrialScreen<T extends AbstractContainerMenu>
     public boolean isPauseScreen() {
         return false;
     }
+    @Override
+    protected void init() {
+        super.init();
+        terminalManager.getActiveApplication().init(this);
+    }
+
 }
