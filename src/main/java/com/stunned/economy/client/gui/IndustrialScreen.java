@@ -26,6 +26,7 @@ public abstract class IndustrialScreen<T extends AbstractContainerMenu>
         return addRenderableWidget(widget);
     }
 
+
     protected final TerminalManager terminalManager = new TerminalManager();
 
     @Override
