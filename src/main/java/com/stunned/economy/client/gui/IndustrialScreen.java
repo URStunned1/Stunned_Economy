@@ -13,7 +13,7 @@ public abstract class IndustrialScreen<T extends AbstractContainerMenu>
     public IndustrialScreen(T menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
 
-        this.imageWidth = 240;
+        this.imageWidth = 352;
         this.imageHeight = 170;
 
         this.inventoryLabelX = -1000;
@@ -24,6 +24,14 @@ public abstract class IndustrialScreen<T extends AbstractContainerMenu>
             net.minecraft.client.gui.narration.NarratableEntry>
     W addTerminalWidget(W widget) {
         return addRenderableWidget(widget);
+    }
+
+    public int getTerminalWidth() {
+        return this.imageWidth;
+    }
+
+    public int getTerminalHeight() {
+        return this.imageHeight;
     }
 
 

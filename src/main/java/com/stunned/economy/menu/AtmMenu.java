@@ -15,11 +15,20 @@ import net.minecraft.world.item.ItemStack;
 public class AtmMenu extends AbstractContainerMenu {
 
     public static final int BUTTON_DEPOSIT = 0;
-    public static final int BUTTON_WITHDRAW_100 = 1;
+    public static final int BUTTON_WITHDRAW_CUSTOM = 1;
     public static final int BUTTON_BALANCE = 2;
 
     private int balance = 0;
     private int cashOnHand = 0;
+    private int withdrawAmount = 100;
+
+    public int getWithdrawAmount() {
+        return withdrawAmount;
+    }
+
+    public void setWithdrawAmount(int amount) {
+        this.withdrawAmount = Math.max(0, amount);
+    }
 
     public AtmMenu(int containerId, Inventory inventory, FriendlyByteBuf extraData) {
         this(containerId, inventory);
@@ -105,7 +114,7 @@ public class AtmMenu extends AbstractContainerMenu {
 
         switch (id) {
             case BUTTON_DEPOSIT -> BankCommands.deposit(serverPlayer);
-            case BUTTON_WITHDRAW_100 -> BankCommands.withdraw(serverPlayer, 100);
+            case BUTTON_WITHDRAW_CUSTOM -> BankCommands.withdraw(serverPlayer, withdrawAmount);
             case BUTTON_BALANCE -> BankCommands.balance(serverPlayer);
             default -> {
                 return false;

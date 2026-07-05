@@ -1,56 +1,71 @@
 package com.stunned.economy.terminal.apps;
 
 import com.stunned.economy.client.gui.IndustrialScreen;
+import com.stunned.economy.menu.AtmMenu;
 import com.stunned.economy.terminal.TerminalApplication;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import com.stunned.economy.menu.AtmMenu;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+import com.stunned.economy.client.gui.TerminalLayout;
+
+import java.text.NumberFormat;
 
 public class BankApplication implements TerminalApplication {
+    private EditBox amountBox;
 
     @Override
     public String getAppName() {
         return "Stunned National Bank";
     }
 
+
     @Override
     public void init(IndustrialScreen<?> screen) {
-        int left = screen.getGuiLeft();
-        int top = screen.getGuiTop();
+        TerminalLayout layout = new TerminalLayout(
+                screen.getGuiLeft(),
+                screen.getGuiTop(),
+                screen.getTerminalWidth()
+        );
+
+        amountBox = new EditBox(
+                Minecraft.getInstance().font,
+                layout.leftControlX,
+                layout.amountY,
+                layout.controlWidth,
+                layout.controlHeight,
+                Component.literal("Amount")
+        );
+
+        amountBox.setFilter(text -> text.matches("\\d*"));
+        amountBox.setHint(Component.literal("Amount"));
+        amountBox.setValue("0");
+
+        screen.addTerminalWidget(amountBox);
 
         screen.addTerminalWidget(Button.builder(
-                Component.literal("Deposit All"),
-                button -> {
-                    Minecraft mc = Minecraft.getInstance();
-
-                    if (mc.player != null && mc.gameMode != null) {
-                        mc.gameMode.handleInventoryButtonClick(
-                                mc.player.containerMenu.containerId,
-                                AtmMenu.BUTTON_DEPOSIT
-                        );
-                    }
-                }
-
-        ).bounds(left + 20, top + 105, 90, 20).build());
+                Component.literal("Deposit"),
+                button -> runBankCommand("deposit")
+        ).bounds(
+                layout.rightControlX,
+                layout.amountY,
+                layout.controlWidth,
+                layout.controlHeight
+        ).build());
 
         screen.addTerminalWidget(Button.builder(
-                Component.literal("Withdraw 100"),
-                button -> {
-                    Minecraft mc = Minecraft.getInstance();
-
-                    if (mc.player != null && mc.gameMode != null) {
-                        mc.gameMode.handleInventoryButtonClick(
-                                mc.player.containerMenu.containerId,
-                                AtmMenu.BUTTON_WITHDRAW_100
-                        );
-                    }
-                }
-        ).bounds(left + 120, top + 105, 100, 20).build());
+                Component.literal("Withdraw"),
+                button -> runBankCommand("withdraw")
+        ).bounds(
+                layout.rightControlX,
+                layout.actionY,
+                layout.controlWidth,
+                layout.controlHeight
+        ).build());
 
         screen.addTerminalWidget(Button.builder(
-                Component.literal("Balance"),
+                Component.literal("Update"),
                 button -> {
                     Minecraft mc = Minecraft.getInstance();
 
@@ -61,56 +76,100 @@ public class BankApplication implements TerminalApplication {
                         );
                     }
                 }
+        ).bounds(
+                layout.leftControlX,
+                layout.actionY,
+                layout.controlWidth,
+                layout.controlHeight
+        ).build());
+    }
 
-        ).bounds(left + 20, top + 130, 90, 20).build());
+    private void runBankCommand(String action) {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (mc.player == null || amountBox == null) {
+            return;
+        }
+
+        String text = amountBox.getValue();
+
+        if (text.isEmpty()) {
+            return;
+        }
+
+        int amount = Integer.parseInt(text);
+
+        if (amount <= 0) {
+            return;
+        }
+
+        mc.player.connection.sendCommand("bank " + action + " " + amount);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int left, int top, int mouseX, int mouseY, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
 
-        int x = left + 20;
-        int y = top + 35;
+        TerminalLayout layout = new TerminalLayout(left, top, 240);
 
-        guiGraphics.drawString(mc.font, "STUNNED NATIONAL BANK", x, y, 0x00FFFF, false);
-
-        y += 30;
-        guiGraphics.drawString(mc.font, "Balance:", x, y, 0xFFFFFF, false);
         long balance = 0;
         int cash = 0;
 
-        if (Minecraft.getInstance().player != null &&
-                Minecraft.getInstance().player.containerMenu instanceof AtmMenu atmMenu) {
-
+        if (mc.player != null && mc.player.containerMenu instanceof AtmMenu atmMenu) {
             balance = atmMenu.getBalance();
             cash = atmMenu.getCashOnHand();
         }
 
         guiGraphics.drawString(
                 mc.font,
-                balance + " Credits",
-                x + 120,
-                y,
-                0x55FF55,
+                "STUNNED NATIONAL BANK",
+                layout.labelX,
+                layout.titleY,
+                0x00FFFF,
                 false
         );
 
-        y += 20;
+// Divider line
+        guiGraphics.fill(
+                layout.labelX,
+                layout.dividerY,
+                left + 220,
+                layout.dividerY + 1,
+                0xFF444444
+        );
 
         guiGraphics.drawString(
                 mc.font,
-                "Cash On Hand:",
-                x,
-                y,
+                "Balance:",
+                layout.labelX,
+                layout.balanceY,
                 0xFFFFFF,
                 false
         );
 
         guiGraphics.drawString(
                 mc.font,
-                cash + " Credits",
-                x + 120,
-                y,
+                NumberFormat.getIntegerInstance().format(balance) + " Credits",
+                layout.valueX,
+                layout.balanceY,
+                0x55FF55,
+                false
+        );
+
+        guiGraphics.drawString(
+                mc.font,
+                "Cash On Hand:",
+                layout.labelX,
+                layout.cashY,
+                0xFFFFFF,
+                false
+        );
+
+        guiGraphics.drawString(
+                mc.font,
+                NumberFormat.getIntegerInstance().format(cash) + " Credits",
+                layout.valueX,
+                layout.cashY,
                 0xFFFF55,
                 false
         );
@@ -118,6 +177,5 @@ public class BankApplication implements TerminalApplication {
 
     @Override
     public void onClose() {
-
     }
 }

@@ -79,6 +79,10 @@ public class BankAccountManager {
     }
 
     private static void addTransaction(BankAccount account, String type, long amount, String note) {
+        if (account.transactions == null) {
+            account.transactions = new ArrayList<>();
+        }
+
         account.transactions.add(new BankTransaction(type, amount, System.currentTimeMillis(), note));
 
         while (account.transactions.size() > 25) {

@@ -9,6 +9,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 
 public class BankCommands {
 
@@ -19,7 +20,12 @@ public class BankCommands {
                                 .executes(ctx -> balance(ctx.getSource().getPlayerOrException())))
 
                         .then(Commands.literal("deposit")
-                                .executes(ctx -> deposit(ctx.getSource().getPlayerOrException())))
+                                .executes(ctx -> deposit(ctx.getSource().getPlayerOrException()))
+                                .then(Commands.argument("amount", IntegerArgumentType.integer(1))
+                                        .executes(ctx -> depositAmount(
+                                                ctx.getSource().getPlayerOrException(),
+                                                IntegerArgumentType.getInteger(ctx, "amount")
+                                        ))))
 
                         .then(Commands.literal("withdraw")
                                 .then(Commands.argument("amount", IntegerArgumentType.integer(1))
@@ -154,5 +160,56 @@ public class BankCommands {
         sender.sendSystemMessage(Component.literal("Paid " + target.getName().getString() + " " + amount + " credits."));
         target.sendSystemMessage(Component.literal(sender.getName().getString() + " paid you " + amount + " credits."));
         return amount;
+    }
+
+    public static int depositAmount(ServerPlayer player, int amount) {
+        int remaining = amount;
+        int deposited = 0;
+
+        deposited += removeCredits(player, ModItems.CREDIT_100.get(), 100, remaining);
+        remaining = amount - deposited;
+
+        deposited += removeCredits(player, ModItems.CREDIT_50.get(), 50, remaining);
+        remaining = amount - deposited;
+
+        deposited += removeCredits(player, ModItems.CREDIT_10.get(), 10, remaining);
+        remaining = amount - deposited;
+
+        deposited += removeCredits(player, ModItems.CREDIT_5.get(), 5, remaining);
+        remaining = amount - deposited;
+
+        deposited += removeCredits(player, ModItems.CREDIT_1.get(), 1, remaining);
+
+        if (deposited <= 0) {
+            player.sendSystemMessage(Component.literal("You do not have enough credits to deposit that amount."));
+            return 0;
+        }
+
+        BankAccountManager.addBalance(player, deposited);
+        player.sendSystemMessage(Component.literal("Deposited " + deposited + " Stunned Credits."));
+        balance(player);
+        return deposited;
+    }
+
+    private static int removeCredits(ServerPlayer player, Item item, int value, int maxValueToRemove) {
+        int removedValue = 0;
+
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+
+            while (!stack.isEmpty()
+                    && stack.is(item)
+                    && removedValue + value <= maxValueToRemove) {
+
+                stack.shrink(1);
+                removedValue += value;
+            }
+
+            if (removedValue >= maxValueToRemove) {
+                break;
+            }
+        }
+
+        return removedValue;
     }
 }
