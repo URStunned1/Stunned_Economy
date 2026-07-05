@@ -10,6 +10,10 @@ import com.stunned.economy.terminal.TerminalManager;
 public abstract class IndustrialScreen<T extends AbstractContainerMenu>
         extends AbstractContainerScreen<T> {
 
+    public int getTerminalWidth() {
+        return this.imageWidth;
+    }
+
     public IndustrialScreen(T menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
 
